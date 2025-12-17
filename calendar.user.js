@@ -75,11 +75,12 @@ function initCss() {
 .calendar-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: auto repeat(6, 1fr); /* Explicitly define rows */
     gap: 0;
     background: #ddd;
     border: 1px solid #ddd;
     margin-bottom: 15px;
-    height: 320px; /* Fixed height for 6 weeks + header */
+    height: 240px; /* Adjusted height */
 }
         .day-header {
             background: #e9ecef;
@@ -92,10 +93,10 @@ function initCss() {
         }
         .day-cell {
             background: white;
-            min-height: 40px;
-            padding: 6px;
+            min-height: 30px;
+            padding: 4px;
             text-align: center;
-            font-size: 18px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -169,50 +170,56 @@ function initCss() {
     document.head.appendChild(style);
 }
 
-    function generateMonthCalendar(year, month, events, offs, today) {
-        const firstDay = new Date(year, month, 1).getDay();
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        const prevMonthDays = new Date(year, month, 0).getDate();
+function generateMonthCalendar(year, month, events, offs, today) {
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevMonthDays = new Date(year, month, 0).getDate();
+    const nextMonth = month === 11 ? 0 : month + 1;
+    const nextYear = month === 11 ? year + 1 : year;
 
-        let html = '<div class="calendar-grid">';
+    let html = '<div class="calendar-grid">';
 
-        const dayNames = ['SUN', 'MON', 'TUES', 'WED', 'THUR', 'FRI', 'SAT'];
-        dayNames.forEach(function(day) {
-            html += '<div class="day-header">' + day + '</div>';
-        });
+    const dayNames = ['SUN', 'MON', 'TUES', 'WED', 'THUR', 'FRI', 'SAT'];
+    dayNames.forEach(function(day) {
+        html += '<div class="day-header">' + day + '</div>';
+    });
 
-        for (let i = firstDay - 1; i >= 0; i--) {
-            const day = prevMonthDays - i;
-            html += '<div class="day-cell other-month">' + day + '</div>';
-        }
-
-        for (let day = 1; day <= daysInMonth; day++) {
-            const cellDate = new Date(year, month, day);
-            const dateStr = year + '-' +
-                            String(month + 1).padStart(2, '0') + '-' +
-                            String(day).padStart(2, '0');
-
-            const isToday = cellDate.toDateString() === today.toDateString();
-            const hasEvent = events.some(function(e) { return e.date === dateStr; });
-            const hasMandatoryOff = offs.some(function(o) { return o.date === dateStr; });
-
-            let classes = 'day-cell';
-            if (isToday) classes += ' today';
-            if (hasMandatoryOff) classes += ' has-mandatory-off';
-            else if (hasEvent) classes += ' has-event';
-
-            html += '<div class="' + classes + '">' + day + '</div>';
-        }
-
-        const totalCells = firstDay + daysInMonth;
-        const remainingCells = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
-        for (let day = 1; day <= remainingCells; day++) {
-            html += '<div class="day-cell other-month">' + day + '</div>';
-        }
-
-        html += '</div>';
-        return html;
+    // Previous month days
+    for (let i = firstDay - 1; i >= 0; i--) {
+        const day = prevMonthDays - i;
+        html += '<div class="day-cell other-month">' + day + '</div>';
     }
+
+    // Current month days
+    for (let day = 1; day <= daysInMonth; day++) {
+        const cellDate = new Date(year, month, day);
+        const dateStr = year + '-' +
+                        String(month + 1).padStart(2, '0') + '-' +
+                        String(day).padStart(2, '0');
+
+        const isToday = cellDate.toDateString() === today.toDateString();
+        const hasEvent = events.some(function(e) { return e.date === dateStr; });
+        const hasMandatoryOff = offs.some(function(o) { return o.date === dateStr; });
+
+        let classes = 'day-cell';
+        if (isToday) classes += ' today';
+        if (hasMandatoryOff) classes += ' has-mandatory-off';
+        else if (hasEvent) classes += ' has-event';
+
+        html += '<div class="' + classes + '">' + day + '</div>';
+    }
+
+    // Next month days - fill remaining cells to complete 6 weeks (42 total cells)
+    const totalCellsUsed = firstDay + daysInMonth;
+    const remainingCells = 42 - totalCellsUsed; // Always fill to 42 cells (6 weeks)
+
+    for (let day = 1; day <= remainingCells; day++) {
+        html += '<div class="day-cell other-month">' + day + '</div>';
+    }
+
+    html += '</div>';
+    return html;
+}
 
     function generateEventList(year, month, events, offs) {
         const monthEvents = events.filter(function(e) {
