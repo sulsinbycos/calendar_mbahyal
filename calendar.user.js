@@ -72,15 +72,15 @@ function initCss() {
             border: 2px solid #333;
             box-shadow: 4px 4px 0px #333;
         }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 0;
-            background: #ddd;
-            border: 1px solid #ddd;
-            margin-bottom: 15px;
-            height: 320px; /* Fixed height for 6 weeks + header */
-        }
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+    background: #ddd;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    height: 320px; /* Fixed height for 6 weeks + header */
+}
         .day-header {
             background: #e9ecef;
             padding: 8px; /* Changed from 8px 8px for consistency */
