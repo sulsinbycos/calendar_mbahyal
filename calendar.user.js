@@ -75,10 +75,11 @@ function initCss() {
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 0; /* Changed from 2px to 0 for uniform cells */
+            gap: 0;
             background: #ddd;
             border: 1px solid #ddd;
             margin-bottom: 15px;
+            height: 320px; /* Fixed height for 6 weeks + header */
         }
         .day-header {
             background: #e9ecef;
